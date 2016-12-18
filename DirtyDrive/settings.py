@@ -23,9 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '1we^c3skcbg+68s*a5!x!+-t!u_ywa3a91)%(95qa7t@1f_2up'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'dirtydrive.azurewebsites.net',
+    '*',
+]
 
 
 # Application definition
