@@ -79,27 +79,31 @@ WSGI_APPLICATION = 'DirtyDrive.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
-
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': path.join(PROJECT_ROOT, 'db.sqlite3'),
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+    }
+}
+
+#DATABASES = {
+#    'default': {
         #'ENGINE': 'django.contrib.gis.db.backends.postgis',
         #'ENGINE': 'django.db.backends.postgresql',
-        'ENGINE': 'django.db.backends.sqlite3',
+#        'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': 'postgis_DirtyDrive2',
-        'NAME': 'DirtyDrive1',
+#        'NAME': 'DirtyDrive1',
         #'NAME': 'DirtyDriveGis',
         #'NAME': os.path.join(BASE_DIR, 'db_DirtyDrive.sqlite3'),
         #'USER': 'postgres',
         #'PASSWORD': 'dbpassword',
         #'HOST': 'localhost',
-    }
-}
+#    }
+#}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
