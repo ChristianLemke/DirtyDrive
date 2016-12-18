@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis',
+#    'django.contrib.gis',
 ]
 
 MIDDLEWARE = [
@@ -88,16 +88,16 @@ WSGI_APPLICATION = 'DirtyDrive.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        #'ENGINE': 'django.contrib.gis.db.backends.postgis',
         #'ENGINE': 'django.db.backends.postgresql',
-        #'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': 'postgis_DirtyDrive2',
-        #'NAME': 'DirtyDrive7',
-        'NAME': 'DirtyDriveGis',
+        'NAME': 'DirtyDrive1',
+        #'NAME': 'DirtyDriveGis',
         #'NAME': os.path.join(BASE_DIR, 'db_DirtyDrive.sqlite3'),
-        'USER': 'postgres',
-        'PASSWORD': 'dbpassword',
-        'HOST': 'localhost',
+        #'USER': 'postgres',
+        #'PASSWORD': 'dbpassword',
+        #'HOST': 'localhost',
     }
 }
 
