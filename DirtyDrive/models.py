@@ -78,6 +78,6 @@ class DriveNowPetrolStation(models.Model):
 
 class CityDistrict(models.Model):
     id = models.IntegerField(primary_key=True)
-    polygon = models.PolygonField()
+    #polygon = models.PolygonField()
     name = models.CharField(unique=True, null=False, max_length=255)
     
