@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <title>DirtyDrive</title>
+            {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'DirtyDrive/style.css' %}" />
+        <link rel="stylesheet" href="{% static 'leaflet/dist/leaflet.css' %}"/>
+		
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        
+        
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+
+
+        
+    </head>    
+
+    <body>
+        <div class="container theme-showcase" role="main">
+            <!-- Main jumbotron for a primary marketing message or call to action -->
+
+            <div class="jumbotron">
+                <h1>DriveDirty</h1>
+                <p>Playing with Open Data</p>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Data loader</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>
+                                <b>Python:</b> </br>
+                                {{pyv}}
+                            </p>
+                            <p>
+                                <b>Loaded Date:</b>
+                                {% for d in available_days_list %}
+                                <li>day:{{d.day}}, count: {{d.available}}</li>
+                                {% endfor %}
+                            </p>
+                            <p>
+                                <form action="/data/" method="post">
+                                    {% csrf_token %}
+                                    <label for="Date">Load Date: </label>
+                                    <input id="Date" type="date" name="Date" value="{{ current_name }}">
+                                    <input type="submit" value="ok" />
+                                </form>
+                            </p>
+                                
+                            <div id="slider-range"></div>
+                        </div>
+                
+                    </div>
+
+
+                    
+                       
+
+
+                    </div>
+                </div>   
+                    
+
+        
+            
+
+            
+
+
+
+
+
+
+
+
+
+        </div> <!-- /container -->
+        <script>
+           
+        </script>
+    </body>
+</html>
