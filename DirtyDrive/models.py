@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 
 #from django.contrib.gis.db import models
 import datetime
-#from django.db import models
-from django.contrib.gis.db import models
+from django.db import models
+#from django.contrib.gis.db import models
 
 
 
@@ -56,7 +56,7 @@ class DriveNowCar(models.Model):
     addressZIP = models.CharField(max_length=255)
     lng = models.FloatField()
     lat = models.FloatField()
-    point = models.PointField(null=True, blank=True)
+    #point = models.PointField(null=True, blank=True)
     #mPoint = django.contrib.gis.db.models.fields.MultiPointField(srid=4326)
 
 class DriveNowChargingStation(models.Model):
@@ -65,7 +65,7 @@ class DriveNowChargingStation(models.Model):
     organisation = models.CharField(max_length=255)
     lng = models.FloatField()
     lat = models.FloatField()
-    point = models.PointField(null=True, blank=True)
+    #point = models.PointField(null=True, blank=True)
 
 
 class DriveNowPetrolStation(models.Model):
@@ -74,7 +74,7 @@ class DriveNowPetrolStation(models.Model):
     organisation = models.CharField(max_length=255)
     lng = models.FloatField()
     lat = models.FloatField()
-    point = models.PointField(null=True, blank=True)
+    #point = models.PointField(null=True, blank=True)
 
 class CityDistrict(models.Model):
     id = models.IntegerField(primary_key=True)
