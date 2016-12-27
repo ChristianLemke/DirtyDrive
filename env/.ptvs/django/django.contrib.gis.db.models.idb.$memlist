@@ -10,7 +10,7 @@ MultiLineStringField
 cached_property
 URLField
 SET_NULL
-DictWrapper
+python_2_unicode_compatible
 Expression
 connection
 DecimalField
@@ -31,6 +31,7 @@ ObjectDoesNotExist
 ManyToManyField
 Aggregate
 When
+timezone
 CommaSeparatedIntegerField
 utils
 Extent3D
@@ -55,9 +56,9 @@ options
 ImageField
 forms
 smart_text
-Count
+aggregates
 SET
-BigIntegerField
+Count
 Model
 NOT_PROVIDED
 BigAutoField
@@ -90,7 +91,7 @@ warn_about_renamed_method
 FloatField
 manager
 Case
-python_2_unicode_compatible
+DictWrapper
 wraps
 ExpressionWrapper
 BinaryField
@@ -109,7 +110,7 @@ DeferredAttribute
 UUIDField
 OrderWrt
 ExtentField
-timezone
+subclassing
 AutoField
 parse_duration
 prefetch_related_objects
@@ -130,8 +131,8 @@ decimal
 query_utils
 RegisterLookupMixin
 DO_NOTHING
-aggregates
 permalink
+BigIntegerField
 TimeField
 RasterField
 RemovedInDjango20Warning

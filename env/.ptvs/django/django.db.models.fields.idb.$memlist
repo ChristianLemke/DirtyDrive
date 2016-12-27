@@ -1,5 +1,5 @@
 capfirst
-b64decode
+IPAddressField
 BooleanField
 b64encode
 FloatField
@@ -40,13 +40,13 @@ CharField
 RemovedInDjango20Warning
 _
 related_lookups
-PositiveSmallIntegerField
 TextField
+PositiveSmallIntegerField
 NullBooleanField
 Field
 Empty
 parse_date
-IPAddressField
+b64decode
 FieldDoesNotExist
 URLField
 warn_about_renamed_method
@@ -60,6 +60,7 @@ validators
 six
 DateTimeField
 DeferredAttribute
+subclassing
 AutoField
 parse_duration
 PositiveIntegerField

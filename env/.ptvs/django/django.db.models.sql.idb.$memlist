@@ -1,5 +1,5 @@
 NO_RESULTS
-Ref
+where
 OR
 check_rel_lookup_compatibility
 EmptyResultSet
@@ -30,7 +30,7 @@ QUERY_TERMS
 Col
 InsertQuery
 BaseTable
-where
+Ref
 OrderedDict
 constants
 Query
@@ -53,6 +53,7 @@ FieldError
 RemovedInDjango20Warning
 Counter
 get_order_dir
+aggregates
 INNER
 GET_ITERATOR_CHUNK_SIZE
 six
