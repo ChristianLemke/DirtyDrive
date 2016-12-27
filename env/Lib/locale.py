@@ -16,7 +16,7 @@ import encodings
 import encodings.aliases
 import re
 import operator
-#todo import functools
+import functools
 
 try:
     _unicode = unicode
@@ -107,7 +107,7 @@ _localeconv = localeconv
 # This is useful for testing purposes.
 _override_localeconv = {}
 
-#todo @functools.wraps(_localeconv)
+@functools.wraps(_localeconv)
 def localeconv():
     d = _localeconv()
     if _override_localeconv:
