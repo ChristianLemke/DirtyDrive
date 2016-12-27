@@ -14,7 +14,7 @@ import encodings
 import encodings.aliases
 import re
 import operator
-import functools
+#todo import functools
 
 # keep a copy of the builtin str type, because 'str' name is overridden
 # in globals by a function below
@@ -109,7 +109,7 @@ _localeconv = localeconv
 # This is useful for testing purposes.
 _override_localeconv = {}
 
-@functools.wraps(_localeconv)
+#todo @functools.wraps(_localeconv)
 def localeconv():
     d = _localeconv()
     if _override_localeconv:
