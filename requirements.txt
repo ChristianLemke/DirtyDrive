@@ -1,5 +1,6 @@
-django<2
-psycopg2
-python-dateutil
-requests
-pytz
+Django==1.10.4
+psycopg2==2.6.2
+python-dateutil==2.6.0
+requests==2.12.4
+pytz==2016.10
+six==1.10.0
