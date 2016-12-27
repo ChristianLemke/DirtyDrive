@@ -16,11 +16,17 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from DirtyDrive import views
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^data/', views.data, name='data'),
     #url(r'^DirtyDrive/', include('DirtyDrive.urls')),
     #url(r'^$', views.index, name='index'),
-    url(r'^$', views.index, name='index'),
+
+    url(r'^$',  RedirectView.as_view(url='dirtyorigin', permanent=False), name='index'),
+    url(r'^dirtyorigin/', views.dirtyorigin, name='dirtyorigin'),
+    url(r'^dirtyzero/', views.dirtyzero, name='dirtyzero'),
+    url(r'^dirtydrives/', views.dirtydrives, name='dirtydrives'),
+
 ]

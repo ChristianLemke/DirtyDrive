@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import django, os
 
-from DirtyDrive import data_loader as loader
+#from DirtyDrive import data_loader as loader
 import json, requests
-from lxml import html
+#from lxml import html
 import datetime
 import time
 import pytz
@@ -15,7 +15,7 @@ class db_saver(object):
         self.url = 'https://data.robbi5.com/drivenow-muc/'
         self.page_dates = []
         self.filtered_page_dates = []
-        self.dl = loader.data_loader()
+        #self.dl = loader.data_loader()
 
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'DirtyDrive.settings')
         #settings.configure()
@@ -31,8 +31,9 @@ class db_saver(object):
         self.page_dates = []
 
         if page.status_code == 200:
-            tree = html.fromstring(page.content)
-            page_json_files = tree.xpath('/html/body/pre/a/text()')
+            #tree = html.fromstring(page.content)
+            #page_json_files = tree.xpath('/html/body/pre/a/text()')
+            page_json_files=[]
 
         for t in page_json_files[1:]:
             self.page_dates.append([self.dl.get_date_from_filename(t),t])

@@ -1,0 +1,9 @@
+C:\Users\super_000\Source\mvs\DirtyDrive\bin\Microsoft.PythonTools.WebRole.dll
+C:\Users\super_000\Source\mvs\DirtyDrive\bin\AzureSetup.cfg
+C:\Users\super_000\Source\mvs\DirtyDrive\bin\Microsoft.PythonTools.AzureSetup.exe
+C:\Users\super_000\Source\mvs\DirtyDrive\bin\Microsoft.PythonTools.AzureSetup.exe.config
+C:\Users\super_000\Source\mvs\DirtyDrive\bin\wfastcgi.py
+C:\Users\super_000\Source\mvs\DirtyDrive\obj\Release\deployment-updated-orig-prefix.txt
+C:\Users\super_000\Source\mvs\DirtyDrive\ptvs_virtualenv_proxy.py
+C:\Users\super_000\Source\mvs\DirtyDrive\obj\Release\web.config
+C:\Users\super_000\Source\mvs\DirtyDrive\obj\Release\web.debug.config

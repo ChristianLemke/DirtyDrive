@@ -1,6 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+from django.http import HttpRequest
+from django.template import RequestContext
+from datetime import datetime
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from DirtyDrive.models import DriveNowCarType, DriveNowCar, DriveNowChargingStation, DriveNowPetrolStation
@@ -14,6 +16,46 @@ from DirtyDrive import db_saver
 import db_controller
 
 
+def dirtyorigin(request):
+    assert isinstance(request, HttpRequest)
+
+    c = db_controller.db_controller()
+    available_days_list = c.get_available_dates()
+    from_day = 1
+    to_day = len(available_days_list)
+
+    if request.method == 'POST':
+        from_day = int(request.POST['from_day'])
+        to_day = int(request.POST['to_day'])
+
+    print(from_day, to_day)
+
+    DriveNowCarTypes_list = DriveNowCarType.objects.order_by('-id')
+    context = {
+        'DriveNowCarTypes_list': DriveNowCarTypes_list,
+        'available_days_list': available_days_list,
+        'from_day': from_day,
+        'to_day': to_day,
+        'districts': [],
+        #'districts': c.get_city_districts()[:10],
+
+    }
+    return render(request, 'DirtyDrive/dirtyorigin.html', context)
+
+
+def dirtydrives(request):
+    assert isinstance(request, HttpRequest)
+    context = {
+        
+    }
+    return render(request, 'DirtyDrive/dirtydrives.html', context)
+
+def dirtyzero(request):
+    assert isinstance(request, HttpRequest)
+    context = {
+        
+    }
+    return render(request, 'DirtyDrive/dirtyzero.html', context)
 
 def data(request):
     c = db_controller.db_controller()
@@ -37,24 +79,5 @@ def data(request):
 
     return render(request, 'DirtyDrive/data.html', context)
 
-def index(request):
-    c = db_controller.db_controller()
-    available_days_list = c.get_available_dates()
-    from_day = 1
-    to_day = len(available_days_list)
 
-    if request.method == 'POST':
-        from_day = int(request.POST['from_day'])
-        to_day = int(request.POST['to_day'])
-
-    print(from_day, to_day)
-    DriveNowCarTypes_list = DriveNowCarType.objects.order_by('-id')
-    context = {
-        'DriveNowCarTypes_list': DriveNowCarTypes_list,
-        'available_days_list': available_days_list,
-        'from_day': from_day,
-        'to_day': to_day,
-        'districts': c.get_city_districts()[:10],
-    }
-    return render(request, 'DirtyDrive/index.html', context)
 
