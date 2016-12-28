@@ -155,7 +155,6 @@
         // Load map data
         //d3.json("DirtyDrive/muenchen.geo.json", function(error, mapData) {
         d3.json("{% static 'DirtyDrive/data/muenchen.geo.json'%}", function (error, mapData) {
-        alert(error)
         var features = mapData.features;
 
         // Update color scale domain based on data
