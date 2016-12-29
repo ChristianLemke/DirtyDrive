@@ -159,7 +159,7 @@ LOGGING = {
   'handlers': {
     'logfile': {
       'class': 'logging.handlers.WatchedFileHandler',
-      'filename': 'D:/home/site/wwwroot/error.log'
+      'filename': path.join(PROJECT_ROOT, 'error.log')
     },
   },
   'loggers': {
