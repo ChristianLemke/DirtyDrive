@@ -6,7 +6,7 @@
             <div class="panel-body">
 
                 <!-- map -->
-                <svg></svg>
+                <svg id="map"></svg>
 
                 <!-- High score -->
                 <div class="panel panel-default">
@@ -17,6 +17,51 @@
                     <div class="panel-body">
                         <p>...</p>
                     </div>
+
+                    <div class="panel-body">
+                        <!-- bar -->
+                        <style>
+                            #highscore_bar rect {
+                              fill: steelblue;
+                            }
+                            #highscore_bar .percent{
+                              fill: steelblue;
+                              text-anchor: start;
+                            }
+                            #highscore_bar .name{
+                              fill: white;
+                              text-anchor: start;
+                            }
+
+                            .axis text {
+                              font: 10px sans-serif;
+                            }
+
+                            .axis path,
+                            .axis line {
+                              stroke-width:2;
+                              fill: none;
+                              stroke: #000;
+                              shape-rendering: crispEdges;
+                            }
+
+                            .x.axis path {
+                              display: none;
+                            }
+
+                            .tick{
+                                stroke-width:2;
+                                opacity: 100;
+                            }
+                            .tick.line{
+                                stroke-width:2;
+                                opacity: 100;
+                            }
+
+                            </style>
+                        <svg id="highscore_bar" width="960" height="500"></svg>
+                    </div>
+
                     <table class="table">
                         <thead>
                             <tr>
@@ -48,8 +93,9 @@
                     <h3 class="panel-title">Period of time</h3>
                 </div>
                 <div class="panel-body">
-                    <p>
-                        <form action="/" method="post">
+                    
+                        <form action="/dirtyorigin/" method="post">
+                            {% csrf_token %}
                             <label for="amount">Dates:</label>
                             <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
                             <input  id="from_day" name="from_day" readonly type="hidden">
@@ -58,7 +104,7 @@
                             <br>
                             <input class="btn btn-default" type="submit" value="reload" />
                         </form>
-                    </p>
+                    
                 </div>
             </div>
 
@@ -79,21 +125,38 @@
 
             </div>
         </div>
-    </div>     
-                    
+    <!-- /container -->
 
-
-
-
-    </div> <!-- /container -->
-
+<script src="https://d3js.org/d3-axis.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale.v1.min.js"></script>
 {% endblock %}
 
 
 {% block scripts %}
     <script>
     {% load static %}
-    
+
+    <!-- slider -->
+    $( function() {
+        $( "#slider-range" ).slider({
+        range: true,
+        min: 1,
+        max: {{ available_days_list|length }},
+        values: [ {{from_day}}, {{ to_day }} ],
+        //<!--  my_date|date:"Y-m-d"  -->
+        slide: function( event, ui ) {
+            $( "#amount" ).val( "day" + ui.values[ 0 ] + " - day" + ui.values[ 1 ] );
+            $("#from_day").val(ui.values[ 0 ]);
+            $("#to_day").val(ui.values[ 1 ]);
+        }
+        });
+        $( "#amount" ).val( "day" + $( "#slider-range" ).slider( "values", 0 ) +
+        " - day" + $( "#slider-range" ).slider( "values", 1 ) );
+        $("#from_day").val($( "#slider-range" ).slider( "values", 0 ));
+        $("#to_day").val($( "#slider-range" ).slider( "values", 1 ))
+    });
+
+
 
 
     $( function() {
@@ -117,7 +180,7 @@
         .projection(projection);
 
         // Set svg width & height
-        var svg = d3.select('svg')
+        var svg = d3.select('#map')
         .attr('width', width)
         .attr('height', height);
 
@@ -148,10 +211,6 @@
         .attr('y', 45);
 
 
-
-
-
-
         // Load map data
         //d3.json("DirtyDrive/muenchen.geo.json", function(error, mapData) {
         d3.json("{% static 'DirtyDrive/data/muenchen.geo.json'%}", function (error, mapData) {
@@ -173,7 +232,6 @@
         });
 
 
-        
         // Get province name
         function nameFn(d){
         return d && d.properties ? d.properties.name : null;
@@ -344,6 +402,74 @@
             });
         }
 })
+
+
+        // Wenn du den Schmutzfaktor berechnen darstellen willst, musst du das in Referenz zur Gesamtzahl der Autos im Bereich machen, sonst hast du eine Verzerrung durch Viel-Nutzung.
+        
+        var data=[
+        {"name":"Australia","percent":44.07},
+        {"name":"Austria","percent":12.318},
+        {"name":"bdaba","percent":90.318},
+        {"name":"asdfsadf","percent":0.318},
+        {"name":"bfbbf","percent":34.318},
+        {"name":"asdfsdfo-sadfljsaidff-sad","percent":17.318}
+        ]
+
+
+        var margin = {top: 20, right: 30, bottom: 30, left: 40},
+            width = 700 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom,
+            barHeight = 30,
+            maxData = d3.max(data, function(d) { return d.percent; });
+        //var maxData = 100;
+
+        var x = d3.scale.linear()
+            .domain([0, maxData])
+            .range([0, width]);
+
+        //x.domain([0, d3.max(data, function(d) { return d.percent; })]);
+
+        var x2 = d3.scale.ordinal()
+            .domain([0, 20, 50 ,90])
+            .rangeRoundBands([0, width], 10);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("top");
+
+        var highscore_bar_svg = d3.select("#highscore_bar")
+            .attr("width", width)
+            .attr("height", height);
+
+        var bar = highscore_bar_svg.selectAll("g")
+            .data(data)
+          .enter().append("g")
+            .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+            //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        bar.append("rect")
+            .attr("width", function(d) { return x(d.percent); })
+            .attr("height", barHeight - 1);
+
+        bar.append("text")
+            .attr("class", "name")
+            .attr("x", 3)
+            .attr("y", barHeight / 2)
+            .attr("dy", ".35em")
+            .text(function(d) { return d.name; });
+
+        bar.append("text")
+            .attr("class", "percent")
+            .attr("x", function(d) { return x(d.percent) + 3; })
+            .attr("y", barHeight / 2)
+            .attr("dy", ".35em")
+            .text(function(d) { return d.percent; });
+
+        highscore_bar_svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + 200 + ")")
+            .call(xAxis);
+
 
 
         </script>

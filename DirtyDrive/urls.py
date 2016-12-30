@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^dirtyorigin/', views.dirtyorigin, name='dirtyorigin'),
     url(r'^dirtyzero/', views.dirtyzero, name='dirtyzero'),
     url(r'^dirtydrives/', views.dirtydrives, name='dirtydrives'),
-
+    url(r'^about/', views.about, name='about'),
 ]

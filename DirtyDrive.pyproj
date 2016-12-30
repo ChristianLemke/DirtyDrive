@@ -82,10 +82,10 @@
     <Content Include="DirtyDrive\static\DirtyDrive\data\MuenchenPolygon.ipynb" />
     <Content Include="DirtyDrive\static\DirtyDrive\data\population.csv" />
     <Content Include="DirtyDrive\static\DirtyDrive\js\map.js" />
-    <Content Include="DirtyDrive\static\DirtyDrive\js\slider.js" />
     <Content Include="DirtyDrive\static\DirtyDrive\style\mapstyle.css" />
     <Content Include="DirtyDrive\static\DirtyDrive\style\style.css" />
     <Content Include="DirtyDrive\templates\DirtyDrive\data.html" />
+    <Content Include="DirtyDrive\templates\DirtyDrive\about.html" />
     <Content Include="DirtyDrive\templates\DirtyDrive\index.html" />
     <Content Include="DirtyDrive\templates\DirtyDrive\layout.html" />
     <Content Include="DirtyDrive\templates\DirtyDrive\dirtyorigin.html" />

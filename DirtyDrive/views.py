@@ -21,10 +21,12 @@ def dirtyorigin(request):
 
     c = db_controller.db_controller()
     available_days_list = c.get_available_dates()
+    #available_days_list =[1,2,3,4]
     from_day = 1
     to_day = len(available_days_list)
 
     if request.method == 'POST':
+
         from_day = int(request.POST['from_day'])
         to_day = int(request.POST['to_day'])
 
@@ -56,6 +58,13 @@ def dirtyzero(request):
         
     }
     return render(request, 'DirtyDrive/dirtyzero.html', context)
+
+def about(request):
+    assert isinstance(request, HttpRequest)
+    context = {
+        
+    }
+    return render(request, 'DirtyDrive/about.html', context)
 
 def data(request):
     c = db_controller.db_controller()
