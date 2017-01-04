@@ -406,71 +406,83 @@
 
         // Wenn du den Schmutzfaktor berechnen darstellen willst, musst du das in Referenz zur Gesamtzahl der Autos im Bereich machen, sonst hast du eine Verzerrung durch Viel-Nutzung.
         
-        var data=[
-        {"name":"Australia","percent":44.07},
-        {"name":"Austria","percent":12.318},
-        {"name":"bdaba","percent":90.318},
-        {"name":"asdfsadf","percent":0.318},
-        {"name":"bfbbf","percent":34.318},
-        {"name":"asdfsdfo-sadfljsaidff-sad","percent":17.318}
-        ]
+        function cut(nr) {
+            var str = nr.toString();
+            str = str.substring(0, str.indexOf(".")+3);
+            return Number(str);
+        }
 
 
         var margin = {top: 20, right: 30, bottom: 30, left: 40},
-            width = 700 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom,
-            barHeight = 30,
-            maxData = d3.max(data, function(d) { return d.percent; });
-        //var maxData = 100;
-
-        var x = d3.scale.linear()
-            .domain([0, maxData])
-            .range([0, width]);
-
-        //x.domain([0, d3.max(data, function(d) { return d.percent; })]);
-
-        var x2 = d3.scale.ordinal()
-            .domain([0, 20, 50 ,90])
-            .rangeRoundBands([0, width], 10);
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("top");
+            width = 700 + margin.left + margin.right,
+            height = 800 + margin.top + margin.bottom,
+            barHeight = 30;
 
         var highscore_bar_svg = d3.select("#highscore_bar")
             .attr("width", width)
             .attr("height", height);
 
-        var bar = highscore_bar_svg.selectAll("g")
-            .data(data)
-          .enter().append("g")
-            .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
-            //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        {% with 'DirtyDrive/data/'|add:originFile|add:'' as originFile %}
+        
+        d3.json("{% static originFile %}", function (error, myData) {
+        {% endwith %}
 
-        bar.append("rect")
-            .attr("width", function(d) { return x(d.percent); })
-            .attr("height", barHeight - 1);
+        
+            var data = myData;
+            // Update color scale domain based on data
+            //color.domain([0, d3.max(features, poorvalue)]);
 
-        bar.append("text")
-            .attr("class", "name")
-            .attr("x", 3)
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em")
-            .text(function(d) { return d.name; });
+            //var maxData = d3.max(data, function(d) { return d['percent']; });
+            console.log(data);
+            var maxData = d3.max(data, function(d) { return d.relative; })*100+1;
+            console.log(maxData);
 
-        bar.append("text")
-            .attr("class", "percent")
-            .attr("x", function(d) { return x(d.percent) + 3; })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em")
-            .text(function(d) { return d.percent; });
+            var x = d3.scale.linear()
+                .domain([0, maxData])
+                .range([0, width- margin.left +margin.right]);
 
-        highscore_bar_svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + 200 + ")")
-            .call(xAxis);
+            // Draw each province as a path
+            var bar = highscore_bar_svg.selectAll('g')
+                .data(data)
+                .enter()
+                    .append("g")
+                        .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; })
+            
+            
 
+            bar.append("rect")
+                .attr("width", function(d) { return x(d['relative']*100); })
+                .attr("height", barHeight - 1);
+            
+            bar.append("text")
+                .attr("class", "name")
+                .attr("x", 3)
+                .attr("y", barHeight / 2)
+                .attr("dy", ".35em")
+                .text(function(d) { return d['name']; });
 
+            bar.append("text")
+                .attr("class", "percent")
+                .attr("x", function(d) { return x(d['relative']*100) + 3; })
+                .attr("y", barHeight / 2)
+                .attr("dy", ".35em")
+                .text(function(d) { return cut(d['relative']*100) + '%'; });
+
+            highscore_bar_svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + 200 + ")")
+                .call(xAxis);
+
+            //x.domain([0, d3.max(data, function(d) { return d.percent; })]);
+
+            var x2 = d3.scale.ordinal()
+                .domain([0, 20, 50 ,90])
+                .rangeRoundBands([0, width], 10);
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("top");
+        })
 
         </script>
 {% endblock %}

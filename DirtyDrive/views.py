@@ -23,7 +23,8 @@ def dirtyorigin(request):
     available_days_list = c.get_available_dates()
     #available_days_list =[1,2,3,4]
     from_day = 1
-    to_day = len(available_days_list)
+    #to_day = len(available_days_list)
+    to_day = 7
 
     if request.method == 'POST':
 
@@ -31,6 +32,7 @@ def dirtyorigin(request):
         to_day = int(request.POST['to_day'])
 
     print(from_day, to_day)
+    originFile = "origin_%d-%d.json" %(from_day, to_day)
 
     DriveNowCarTypes_list = DriveNowCarType.objects.order_by('-id')
     context = {
@@ -39,6 +41,7 @@ def dirtyorigin(request):
         'from_day': from_day,
         'to_day': to_day,
         'districts': [],
+        'originFile': originFile,
         #'districts': c.get_city_districts()[:10],
 
     }
