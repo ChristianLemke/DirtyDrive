@@ -21,7 +21,7 @@ def dirtyorigin(request):
 
     c = db_controller.db_controller()
     available_days_list = c.get_available_dates()
-    #available_days_list =[1,2,3,4]
+    available_days_list =[1,2,3,4,5,6,7]
     from_day = 1
     #to_day = len(available_days_list)
     to_day = 7

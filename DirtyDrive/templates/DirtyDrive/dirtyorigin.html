@@ -15,7 +15,7 @@
                             <h3 class="panel-title">Highscore origin</h3>
                     </div>
                     <div class="panel-body">
-                        <p>...</p>
+                        <p>The districts with their percentage of dirty cars.</p>
                     </div>
 
                     <div class="panel-body">
@@ -59,31 +59,9 @@
                             }
 
                             </style>
-                        <svg id="highscore_bar" width="960" height="500"></svg>
+                        <svg id="highscore_bar" ></svg>
                     </div>
 
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                
-                                <th>#</th>
-                                <th> Name</th>
-                                <th>% dirty</th>
-                                <th>Number of cars</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for district in districts %}
-                            <tr>
-                                <td>{{ district.id }}</td>
-                                <td>{{ district.name }}</td>
-                                <td>42</td>
-                                <td>42</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
                 </div>
                   
 
@@ -107,19 +85,6 @@
                     
                 </div>
             </div>
-
-
-
-            {% if DriveNowCarTypes_list %}
-            <ul>
-            {% for type in DriveNowCarTypes_list %}
-                <li>{{ type.modelIdentifier }}</li>
-            {% endfor %}
-            </ul>
-            {% else %}
-            <p>No DriveNowCarTypes_list are available.</p>
-            {% endif %}
-
 
             </div>
 
@@ -157,6 +122,14 @@
     });
 
 
+
+
+    function cut(nr) {
+            var str = nr.toString();
+
+            str = str.substring(0, 5);
+            return Number(str);
+        }
 
 
     $( function() {
@@ -210,12 +183,37 @@
         .attr('x', 20)
         .attr('y', 45);
 
+        function getOriginDataById(id, originData){
+            for (i = 0; i < originData.length; i++) { 
+                if(originData[i].id == id){
+                    //console.log(entry);
+                    return originData[i];
+                }
+            }
+        }
 
         // Load map data
-        //d3.json("DirtyDrive/muenchen.geo.json", function(error, mapData) {
-        d3.json("{% static 'DirtyDrive/data/muenchen.geo.json'%}", function (error, mapData) {
-        var features = mapData.features;
+        var q = d3.queue();
+        {% with 'DirtyDrive/data/'|add:originFile|add:'' as originFile %}
+        q
+            .defer(d3.json, "{% static 'DirtyDrive/data/muenchen.geo.json'%}")
+            .defer(d3.json, "{% static originFile %}")
+        {% endwith %}
 
+        q.awaitAll(function(error, data) {
+            if (error) throw error;
+            mapData = data[0]
+            originData = data[1]
+            console.log(mapData);
+            console.log(originData);
+
+            //console.log(getOriginDataById(4, originData));
+        //});
+
+        //d3.json("DirtyDrive/muenchen.geo.json", function(error, mapData) {
+        //d3.json("{% static 'DirtyDrive/data/muenchen.geo.json'%}", function (error, mapData) {
+        var features = mapData.features;
+        
         // Update color scale domain based on data
         color.domain([0, d3.max(features, poorvalue)]);
 
@@ -234,17 +232,21 @@
 
         // Get province name
         function nameFn(d){
-        return d && d.properties ? d.properties.name : null;
+            return d && d.properties ? d.properties.name : null;
+            //id = d.properties.id;
+            //return getOriginDataById(id, originData) ? getOriginDataById(id, originData).name : "?";
         }
 
         // Get province poor
         function poorFn(d){
-        return d && d.properties ? d.properties.POOR : null;
+            id = d.properties.id;
+            return getOriginDataById(id, originData) ? getOriginDataById(id, originData).count : 0;
         }
 
         // Get province counter
         function counterFn(d){
-        return d && d.properties ? d.properties.counter : null;
+            id = d.properties.id;
+            return getOriginDataById(id, originData) ? getOriginDataById(id, originData).counter : "?";
         }
 
         // Get province name length
@@ -286,27 +288,30 @@
             .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
         }
 
-        function mouseover(d){
+        function mouseover(d, i){
             // Highlight hovered province
-            d3.select(this).style('fill', 'orange');
+            d3.select(this)
+                .style('stroke', 'orange')
+                .style('stroke-width',"5")
 
             // Draw effects
-            textArt(poorvalue(d) + '% ' +poorFn(d)+ ' ' + nameFn(d));
+            textArt(cut(poorvalue(d)*100) + '% ' +poorFn(d)+ '/' + counterFn(d) + ' ' + nameFn(d, i));
 
         }
 
         function mouseout(d){
-        // Reset province color
-        mapLayer.selectAll('path')
-            .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
+            // Reset province color
+            mapLayer.selectAll('path')
+                //.style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
+                .style('stroke', '#aaa')
+                .style('stroke-width',"1")
+            // Remove effect text
+            effectLayer.selectAll('text').transition()
+                .style('opacity', 0)
+                .remove();
 
-        // Remove effect text
-        effectLayer.selectAll('text').transition()
-            .style('opacity', 0)
-            .remove();
-
-        // Clear province name
-        bigText.text('');
+            // Clear province name
+            bigText.text('');
         }
 
         // Gimmick
@@ -406,16 +411,12 @@
 
         // Wenn du den Schmutzfaktor berechnen darstellen willst, musst du das in Referenz zur Gesamtzahl der Autos im Bereich machen, sonst hast du eine Verzerrung durch Viel-Nutzung.
         
-        function cut(nr) {
-            var str = nr.toString();
-            str = str.substring(0, str.indexOf(".")+3);
-            return Number(str);
-        }
+        
 
 
-        var margin = {top: 20, right: 30, bottom: 30, left: 40},
-            width = 700 + margin.left + margin.right,
-            height = 800 + margin.top + margin.bottom,
+        var margin = {top: 20, right: 50, bottom: 20, left: 40},
+            width = 700 ,
+            height = 680 ,
             barHeight = 30;
 
         var highscore_bar_svg = d3.select("#highscore_bar")
@@ -423,7 +424,6 @@
             .attr("height", height);
 
         {% with 'DirtyDrive/data/'|add:originFile|add:'' as originFile %}
-        
         d3.json("{% static originFile %}", function (error, myData) {
         {% endwith %}
 
@@ -433,13 +433,13 @@
             //color.domain([0, d3.max(features, poorvalue)]);
 
             //var maxData = d3.max(data, function(d) { return d['percent']; });
-            console.log(data);
-            var maxData = d3.max(data, function(d) { return d.relative; })*100+1;
-            console.log(maxData);
+            //console.log(data);
+            var maxData = d3.max(data, function(d) { return d.relative*100; });
+
 
             var x = d3.scale.linear()
                 .domain([0, maxData])
-                .range([0, width- margin.left +margin.right]);
+                .range([0, width - margin.left - margin.right]);
 
             // Draw each province as a path
             var bar = highscore_bar_svg.selectAll('g')
