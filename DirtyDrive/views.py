@@ -24,7 +24,7 @@ def dirtyorigin(request):
     available_days_list =[1,2,3,4,5,6,7]
     from_day = 1
     #to_day = len(available_days_list)
-    to_day = 7
+    to_day = 2
 
     if request.method == 'POST':
 

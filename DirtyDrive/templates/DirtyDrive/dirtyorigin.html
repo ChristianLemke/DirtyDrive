@@ -29,7 +29,7 @@
                               text-anchor: start;
                             }
                             #highscore_bar .name{
-                              fill: white;
+                              
                               text-anchor: start;
                             }
 
@@ -75,7 +75,7 @@
                         <form action="/dirtyorigin/" method="post">
                             {% csrf_token %}
                             <label for="amount">Dates:</label>
-                            <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                            <input type="text" id="amount" readonly style="border:0; width:200px;">
                             <input  id="from_day" name="from_day" readonly type="hidden">
                             <input  id="to_day" name="to_day" readonly type="hidden">
                             <div style="margin: 10px" id="slider-range"></div>
@@ -110,13 +110,13 @@
         values: [ {{from_day}}, {{ to_day }} ],
         //<!--  my_date|date:"Y-m-d"  -->
         slide: function( event, ui ) {
-            $( "#amount" ).val( "day" + ui.values[ 0 ] + " - day" + ui.values[ 1 ] );
+            $( "#amount" ).val( "day" + ui.values[ 0 ] + " - day" + ui.values[ 1 ] + " of November 2016");
             $("#from_day").val(ui.values[ 0 ]);
             $("#to_day").val(ui.values[ 1 ]);
         }
         });
         $( "#amount" ).val( "day" + $( "#slider-range" ).slider( "values", 0 ) +
-        " - day" + $( "#slider-range" ).slider( "values", 1 ) );
+        " - day" + $( "#slider-range" ).slider( "values", 1 ) + " of November 2016" );
         $("#from_day").val($( "#slider-range" ).slider( "values", 0 ));
         $("#to_day").val($( "#slider-range" ).slider( "values", 1 ))
     });
@@ -134,20 +134,24 @@
 
     $( function() {
         var width = 700,
-            height = 420,
+            height = 520,
             centered;
 
         // Define color scale
-        var color = d3.scale.linear()
-        .domain([1, 20])
+        var color = d3.scale.sqrt()
+        //var color = d3.scale.linear()
+        .domain([0.0, 1.0])
         .clamp(true)
-        .range(['#fff', '#800000']);
+        //.range(['#fff', '#800000']);
+        //.range(['white', 'red'])
+        .range(["#FFFFDD",  "#1F2D86"]);
+        //.interpolate(d3.interpolateHcl)
+        //.range(["#FFFFDD", "#3E9583", "#1F2D86", "#3E9583"]);
 
         var projection = d3.geo.mercator()
         .scale(80000)
-        // Center the Map in Colombia
-        .center([11.56756, 48.152])
-        .translate([width / 2, height / 2]);
+        .center([11.56756, 48.144])
+        .translate([width / 2, height / 2 - 20]);
 
         var path = d3.geo.path()
         .projection(projection);
@@ -179,9 +183,9 @@
         .style('opacity', 0);
 
         var bigText = g.append('text')
-        .classed('big-text', true)
-        .attr('x', 20)
-        .attr('y', 45);
+        .classed('text', true)
+        .attr('x', 200)
+        .attr('y', 440);
 
         function getOriginDataById(id, originData){
             for (i = 0; i < originData.length; i++) { 
@@ -204,8 +208,8 @@
             if (error) throw error;
             mapData = data[0]
             originData = data[1]
-            console.log(mapData);
-            console.log(originData);
+            //console.log(mapData);
+            //console.log(originData);
 
             //console.log(getOriginDataById(4, originData));
         //});
@@ -215,7 +219,8 @@
         var features = mapData.features;
         
         // Update color scale domain based on data
-        color.domain([0, d3.max(features, poorvalue)]);
+        //color.domain([0, 1.0]);
+        //color.domain([0, d3.max(features, poorvalue)]);
 
         // Draw each province as a path
         mapLayer.selectAll('path')
@@ -246,7 +251,7 @@
         // Get province counter
         function counterFn(d){
             id = d.properties.id;
-            return getOriginDataById(id, originData) ? getOriginDataById(id, originData).counter : "?";
+            return getOriginDataById(id, originData) ? getOriginDataById(id, originData).counter : 0;
         }
 
         // Get province name length
@@ -276,26 +281,27 @@
                 y = height / 2;
                 k = 1;
                 centered = null;
-        }
+            }
 
-        // Highlight the clicked province
-        mapLayer.selectAll('path')
-            .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
+            // Highlight the clicked province
+            //mapLayer.selectAll('path')
+            //    .style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
 
-        // Zoom
-        g.transition()
-            .duration(750)
-            .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
+            // Zoom
+            g.transition()
+                .duration(750)
+                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')scale(' + k + ')translate(' + -x + ',' + -y + ')');
         }
 
         function mouseover(d, i){
             // Highlight hovered province
             d3.select(this)
-                .style('stroke', 'orange')
+                .style('stroke', 'steelblue')
                 .style('stroke-width',"5")
 
             // Draw effects
-            textArt(cut(poorvalue(d)*100) + '% ' +poorFn(d)+ '/' + counterFn(d) + ' ' + nameFn(d, i));
+            textArt(cut(poorvalue(d)*100) + '% ' + nameFn(d));
+            // +poorFn(d)+ '/' + counterFn(d) + 
 
         }
 
@@ -304,6 +310,8 @@
             mapLayer.selectAll('path')
                 //.style('fill', function(d){return centered && d===centered ? '#D5708B' : fillFn(d);});
                 .style('stroke', '#aaa')
+                //#aaa
+                //steelblue
                 .style('stroke-width',"1")
             // Remove effect text
             effectLayer.selectAll('text').transition()
@@ -326,12 +334,9 @@
         ];
 
         function textArt(text){
-        // Use random font
-        var fontIndex = Math.round(Math.random() * FONTS.length);
-        var fontFamily = FONTS[fontIndex] + ', ' + BASE_FONT;
 
         bigText
-            .style('font-family', fontFamily)
+            //.style('font-family', fontFamily)
             .text(text);
 
         // Use dummy text to compute actual width of the text
@@ -406,7 +411,98 @@
             return 0.1 + Math.random()*0.4;
             });
         }
+
+
+
+        //////////////// Create the gradient for the legend ///////////////////////
+        //Extra scale since the color scale is interpolated
+
+        var countScale = d3.scale.linear()
+            .domain([0, 1.0])
+            .range([0, 300])
+
+        //Calculate the variables for the temp gradient
+        var numStops = 10;
+        countRange = countScale.domain();
+        countRange[2] = countRange[1] - countRange[0];
+        countPoint = [];
+        for(var i = 0; i < numStops; i++) {
+            countPoint.push(i * countRange[2]/(numStops-1) + countRange[0]);
+        }//for i
+
+        //Create the gradient
+        svg.append("defs")
+            .append("linearGradient")
+            .attr("id", "legend-traffic")
+            .attr("x1", "0%").attr("y1", "0%")
+            .attr("x2", "100%").attr("y2", "0%")
+            .selectAll("stop") 
+            .data(d3.range(numStops))                
+            .enter().append("stop") 
+            .attr("offset", function(d,i) { 
+                return countScale( countPoint[i] )/width;
+            })   
+            .attr("stop-color", function(d,i) { 
+                return color( countPoint[i] ); 
+            });
+
+        ////////////////////////// Draw the legend ////////////////////////////////
+        var legendWidth = 300;
+        //Color Legend container
+        var legendsvg = svg.append("g")
+            .attr("class", "legendWrapper")
+            .attr("transform", "translate(" + (width / 2 - legendWidth/2) + "," + (height - 40) + ")");
+
+        //Draw the Rectangle
+        legendsvg.append("rect")
+            .attr("class", "legendRect")
+            .attr("x", 0)
+            .attr("y", 0)
+            //.attr("rx", hexRadius*1.25/2)
+            .attr("width", legendWidth)
+            .attr("height", 10)
+            .style("fill", "url(#legend-traffic)");
+            
+        //Append title
+        legendsvg.append("text")
+            .attr('fill', 'grey')
+            .attr("class", "legendTitle")
+            .attr("x", legendWidth/2)
+            .attr("y", -10)
+            .style("text-anchor", "middle")
+            .text("Percentage of dirty cars");
+
+        //Set scale for x-axis
+        var xScale = d3.scale.linear()
+            .range([0, legendWidth])
+            .domain([ 0, 100] );
+
+
+        //Set up X axis
+        for (i = 0; i <= 4; i++) {
+            legendsvg.append("text")
+                .attr('fill', 'grey')
+                .attr("x", i * legendWidth/4)
+                .attr("y", 26)
+                .attr("class", "legendText")
+                .style("text-anchor", "middle")
+                .text( i*25 + "%");
+        }
+
+
+
 })
+
+
+
+
+
+
+
+
+
+
+
 
 
         // Wenn du den Schmutzfaktor berechnen darstellen willst, musst du das in Referenz zur Gesamtzahl der Autos im Bereich machen, sonst hast du eine Verzerrung durch Viel-Nutzung.
@@ -414,9 +510,9 @@
         
 
 
-        var margin = {top: 20, right: 50, bottom: 20, left: 40},
-            width = 700 ,
-            height = 680 ,
+        var margin = {top: 20, right: 30, bottom: 20, left: 10},
+            width = 680 - margin.left - margin.right,
+            height = 750 ,
             barHeight = 30;
 
         var highscore_bar_svg = d3.select("#highscore_bar")
@@ -435,7 +531,7 @@
             //var maxData = d3.max(data, function(d) { return d['percent']; });
             //console.log(data);
             var maxData = d3.max(data, function(d) { return d.relative*100; });
-
+            maxData = 100
 
             var x = d3.scale.linear()
                 .domain([0, maxData])
@@ -446,7 +542,7 @@
                 .data(data)
                 .enter()
                     .append("g")
-                        .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; })
+                        .attr("transform", function(d, i) { return "translate("+ margin.left +"," + i * barHeight + ")"; })
             
             
 
@@ -459,30 +555,40 @@
                 .attr("x", 3)
                 .attr("y", barHeight / 2)
                 .attr("dy", ".35em")
-                .text(function(d) { return d['name']; });
+                .text(function(d) { return d['name'] + ' (' + cut(d['relative']*100) + '%)'; });
 
+            /**
             bar.append("text")
                 .attr("class", "percent")
                 .attr("x", function(d) { return x(d['relative']*100) + 3; })
                 .attr("y", barHeight / 2)
                 .attr("dy", ".35em")
                 .text(function(d) { return cut(d['relative']*100) + '%'; });
+            */
 
-            highscore_bar_svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + 200 + ")")
-                .call(xAxis);
-
-            //x.domain([0, d3.max(data, function(d) { return d.percent; })]);
-
-            var x2 = d3.scale.ordinal()
-                .domain([0, 20, 50 ,90])
-                .rangeRoundBands([0, width], 10);
-
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("top");
-        })
+            //Set up X axis
+            highscore_bar_svg.append("rect")
+                .attr("x", margin.left)
+                .attr("y", height - 22)
+                .attr("height", 4)
+                .attr("width",width - margin.left - margin.right );
+            
+            for (i = 0; i <= 4; i++) {
+                highscore_bar_svg.append("text")
+                    .attr('fill', 'grey')
+                    .attr("x", i * (width - margin.left - margin.right)/4 + margin.left)
+                    .attr("y", height - 4)
+                    .attr("class", "legendText")
+                    .style("text-anchor", "middle")
+                    .text( i*25 + "%");
+                
+                highscore_bar_svg.append("rect")
+                    .attr("x", i * (width - margin.left - margin.right)/4 + margin.left - 2)
+                    .attr("y", height - 28)
+                    .attr("height", 10)
+                    .attr("width", 4);
+                }
+            })
 
         </script>
 {% endblock %}
