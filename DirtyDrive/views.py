@@ -50,8 +50,25 @@ def dirtyorigin(request):
 
 def dirtydrives(request):
     assert isinstance(request, HttpRequest)
+
+    c = db_controller.db_controller()
+    available_days_list = c.get_available_dates()
+    available_days_list =[1,2,3,4,5,6,7]
+    from_day = 1
+    #to_day = len(available_days_list)
+    to_day = 2
+
+    if request.method == 'POST':
+        from_day = int(request.POST['from_day'])
+        to_day = int(request.POST['to_day'])
+
+    matrixFile = "chord_mat_%d-%d.json" %(from_day, to_day)
+
     context = {
-        
+        'available_days_list': available_days_list,
+        'from_day': from_day,
+        'to_day': to_day,
+        'matrixFile': matrixFile,
     }
     return render(request, 'DirtyDrive/dirtydrives.html', context)
 

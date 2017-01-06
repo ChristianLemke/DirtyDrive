@@ -4,16 +4,34 @@
         <div class="panel panel-default">
             <div class="panel-body">
 
-               about
+                <div class="panel panel-default">
+
+                    <div class="panel-body">
+                    
+                       A visualisation-tool of open carsharing data.
+                       <br>
+                       Made by: Christian Lemke
+                       <br>
+                       code: <a href="https://github.com/Superchicken1/DirtyDrive.git" target="_blank"> link </a>
+                       <br>
+                    
+                    </div>
+                </div>
+
             </div>
         </div>     
-    </div>
+                    
+
+    </div> <!-- /container -->
 {% endblock %}
 
 
 {% block scripts %}
 <script>
-    {% load static %}
+
+
+    $("#mynavmenu1").removeClass('active')
+    $("#mynavmenu3").addClass('active')
 </script>
 
 {% endblock %}

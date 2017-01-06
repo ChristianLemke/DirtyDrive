@@ -1,11 +1,70 @@
 ﻿{% extends "DirtyDrive/layout.html" %}
 
 {% block content %}
+
+    <style>
+        
+        #circle circle {
+        fill: none;
+        pointer-events: all;
+        }
+
+        .group path {
+        fill-opacity: .5;
+        }
+
+        path.chord {
+        stroke: #000;
+        stroke-width: .25px;
+        }
+
+        #circle:hover path.fade {
+        display: none;
+        }
+
+    </style>
     <div class="container theme-showcase" role="main">
         <div class="panel panel-default">
             <div class="panel-body">
 
-               a
+                <!-- chord -->
+                <svg id="chord"></svg>
+
+
+
+
+                <div class="panel panel-default">
+
+                    <div class="panel-body">
+                    
+                       A visualisation of the number of dirty drives from their sources to their destinations. 
+                    
+                    </div>
+                </div>
+
+
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Period of time</h3>
+                    </div>
+                    <div class="panel-body">
+                        
+                            <form action="/dirtydrives/" method="post">
+                                {% csrf_token %}
+                                <label for="amount">Dates:</label>
+                                <input type="text" id="amount" readonly style="border:0; width:200px;">
+                                <input  id="from_day" name="from_day" readonly type="hidden">
+                                <input  id="to_day" name="to_day" readonly type="hidden">
+                                <div style="margin: 10px" id="slider-range"></div>
+                                <br>
+                                <input class="btn btn-default" type="submit" value="reload" />
+                            </form>
+                        
+                    </div>
+                </div>
+
+
             </div>
         </div>     
                     
@@ -19,7 +78,200 @@
 
 
 {% block scripts %}
+    <script>
+        {% load static %}
 
-    {% load static %}
+        //setnav
+        $("#mynavmenu1").removeClass('active')
+        $("#mynavmenu2").addClass('active')
 
+        
+        //console.log( ' {{from_day}}, {{ to_day }}')
+
+        <!-- slider -->
+        $( function() {
+            $( "#slider-range" ).slider({
+            range: true,
+            min: 1,
+            max: {{ available_days_list|length }},
+            values: [ {{from_day}}, {{ to_day }} ],
+            //<!--  my_date|date:"Y-m-d"  -->
+            slide: function( event, ui ) {
+                $( "#amount" ).val( "day" + ui.values[ 0 ] + " - day" + ui.values[ 1 ] + " of November 2016");
+                $("#from_day").val(ui.values[ 0 ]);
+                $("#to_day").val(ui.values[ 1 ]);
+            }
+            });
+            $( "#amount" ).val( "day" + $( "#slider-range" ).slider( "values", 0 ) +
+            " - day" + $( "#slider-range" ).slider( "values", 1 ) + " of November 2016" );
+            $("#from_day").val($( "#slider-range" ).slider( "values", 0 ));
+            $("#to_day").val($( "#slider-range" ).slider( "values", 1 ))
+        });
+        
+        <!-- chord -->
+        var width = 690,
+            height = 690,
+            outerRadius = Math.min(width, height) / 2 - 10,
+            innerRadius = outerRadius - 24;
+
+        var formatPercent = d3.format(".1%");
+
+        var arc = d3.svg.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius);
+
+        var layout = d3.layout.chord()
+            .padding(.04)
+            .sortSubgroups(d3.descending)
+            .sortChords(d3.ascending);
+
+        var path = d3.svg.chord()
+            .radius(innerRadius);
+
+        var svg = d3.select("#chord")
+            .attr("width", width)
+            .attr("height", height)
+        .append("g")
+            .attr("id", "circle")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        svg.append("circle")
+            .attr("r", outerRadius);
+
+        // Define color scale
+        var color = d3.scale.linear()
+            .domain([0, 25])
+            .clamp(true)
+            //.range(['#fff', '#800000']);
+            .range(['blue', 'red', 'yellow', 'white'])
+            //.range(["#FFFFDD",  "#1F2D86"]);
+            .interpolate(d3.interpolateHcl)
+            //.range(["#FFFFDD", "#3E9583", "#1F2D86", "#3E9583"]);
+
+        color = d3.scaleOrdinal()
+            .domain(d3.range(25))
+            .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
+
+        color = d3.scale.linear()
+            .domain([0, 25])
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')]);
+
+        color = d3.scale.category20();
+
+        function getOriginDataById(id, originData){
+            for (i = 0; i < originData.length; i++) { 
+                if(originData[i].properties.id == id){
+                    //console.log(entry);
+                    return originData[i].properties;
+                }
+            }
+        }
+
+        {% with 'DirtyDrive/data/'|add:matrixFile|add:'' as matrixFile %}
+        d3.queue()
+            //.defer(d3.csv, "cities.csv")
+            .defer(d3.json, "{% static 'DirtyDrive/data/muenchen.geo.json'%}")
+            //.defer(d3.json, "matrix.json")
+            .defer(d3.json, "{% static matrixFile %}")
+            .await(ready);
+        {% endwith %}
+
+
+        function ready(error, originData, matrix) {
+        if (error) throw error;
+        originData = originData.features;
+
+        // Compute the chord layout.
+        layout.matrix(matrix);
+
+        // Add a group per neighborhood.
+        var group = svg.selectAll(".group")
+            .data(layout.groups)
+            .enter().append("g")
+            .attr("class", "group")
+            .on("mouseover", mouseover);
+
+        // Add a mouseover title.
+        group.append("title").text(function(d, i) {
+            id = i+1;
+            return getOriginDataById(id, originData).name + ": " + d.value + " origins";
+        });
+
+        // Add the group arc.
+        var groupPath = group.append("path")
+            .attr("id", function(d, i) { return "group" + i; })
+            .attr("d", arc)
+            //.style("fill", function(d, i) { return cities[i].color; });
+            .style("fill", function(d, i) { return color(i); });
+
+        // Add a text label.
+        var groupText = group.append("text")
+            .attr("x", 3)
+            .attr("dy", 15);
+
+        groupText.append("textPath")
+            .attr("xlink:href", function(d, i) { return "#group" + i; })
+            .text(function(d, i) {
+                    id = i+1;
+                    name = getOriginDataById(id, originData).name
+                    maxsize = groupPath._groups[0][i].getTotalLength() / 2 / 13 
+                    newstring = name
+                    
+                    if( name.length > maxsize){
+                        newstring = name.substring(0, maxsize)
+                        newstring = newstring+'...'
+                    }
+
+                    //console.log(name,maxsize,groupPath._groups[0][i].getTotalLength(), newstring) 
+
+                    return newstring; 
+                 });
+
+        // Remove the labels that don't fit. :(
+        groupText.filter(function(d, i) {
+                recsize = groupPath._groups[0][i].getTotalLength()
+                //console.log(this, this.getComputedTextLength())
+                return recsize / 2 - 12 < this.getComputedTextLength(); 
+            })
+            .remove();
+        
+
+        // Add the chords.
+        var chord = svg.selectAll(".chord")
+            .data(layout.chords)
+            .enter().append("path")
+            .attr("class", "chord")
+            .style("fill", function(d) {
+                     return color(d.source.index);
+                    //return cities[d.source.index].color; 
+                })
+            .attr("d", path);
+
+        // Add an elaborate mouseover title for each chord.
+        chord.append("title").text(function(d) {
+            idtarget = d.target.index+1;
+            idsource = d.source.index+1;
+            return getOriginDataById(idsource, originData).name
+                + " → " + getOriginDataById(idtarget, originData).name
+                + ": " + d.source.value
+                + "\n" + getOriginDataById(idtarget, originData).name
+                + " → " + getOriginDataById(idsource, originData).name
+                + ": " + d.target.value;
+        });
+
+        function mouseover(d, i) {
+            chord.classed("fade", function(p) {
+            return p.source.index != i
+                && p.target.index != i;
+            });
+        }
+        }
+
+
+
+
+
+
+    </script>
 {% endblock %}
