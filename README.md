@@ -5,4 +5,5 @@ A visualisation of open carsharing data.
 
 Used technologies: Python 2.7, Pandas, Jupyter, Django, D3js, Postgis.
 
+Result running on Azure:
 http://dirtydrive.azurewebsites.net/
